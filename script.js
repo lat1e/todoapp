@@ -14,7 +14,11 @@ function addTodoItem(content) {
 
 // delete
 function deleteTodoItem(id) {
-
+    for (const i in todoData){
+        if (id === todoData[i].id) {
+            todoData.splice(i, 1);
+        }
+    }
 }
 
 // done
@@ -26,4 +30,6 @@ function makeDoneTodoItem(id) {
 addTodoItem("abc");
 addTodoItem("bcd");
 addTodoItem("cdf");
+console.log(JSON.stringify(todoData));
+deleteTodoItem(1);
 console.log(todoData);
