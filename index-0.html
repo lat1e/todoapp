@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todolist</title>
+</head>
+<body>
+    <div>
+        <h1>Todo List</h1>
+        <input type="text" id="todo-input" required>
+        <button id="todo-button">등록</button>
+        <div id="todo-list"></div>
+    </div>
+
+    <script>
+        const todoInp = document.getElementById("todo-input");
+        const todoBut = document.getElementById("todo-button");
+        const todoList = document.getElementById("todo-list");
+
+        function addItem() {
+            if (todoInp.value === "") {
+                return;
+            }
+
+            const list = document.createElement("li");
+
+            const checkBox = document.createElement("input");
+            checkBox.type = "checkbox";
+            list.appendChild(checkBox);
+
+            const todoContent = document.createElement("span");
+            todoContent.innerText = todoInp.value;
+            list.appendChild(todoContent);
+        
+            const delButton = document.createElement("button");
+            delButton.textContent = "x";
+            list.appendChild(delButton);
+
+            todoInp.value = "";
+            todoList.appendChild(list);
+
+
+            checkBox.addEventListener("change", function() {
+                if (checkBox.checked) {
+                    todoContent.style.textDecoration = "line-through";
+                } else {
+                    todoContent.style.textDecoration = "none";
+                }
+            })
+
+            delButton.addEventListener("click", function() {
+                todoList.removeChild(list);
+            })
+        }
+
+        todoBut.addEventListener("click", addItem);
+        todoInp.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                addItem();
+            }
+        });
+
+    </script>
+</body>
+</html>
