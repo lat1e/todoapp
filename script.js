@@ -7,8 +7,9 @@ let todoData = [];
 let lastId = 0;
 
 if (localStorage.getItem("todoData")) {
-    todoData = JSON.parse(localStorage.getItem("todoData"));
-    lastId = JSON.parse(localStorage.getItem("lastId"));
+    const data = JSON.parse(localStorage.getItem("todoData"));
+    todoData = data.todoData;
+    lastId = data.lastId;
     updateTodoScreen();
 }
 
@@ -49,8 +50,9 @@ function actionAfterUpdateTodo() {
 }
 
 function saveTodoData() {
-    localStorage.setItem("todoData", JSON.stringify(todoData));
-    localStorage.setItem("lastId", JSON.stringify(lastId));
+    localStorage.setItem("todoData", JSON.stringify({
+        todoData, lastId
+    }));
 }
 
 function updateTodoScreen() {
