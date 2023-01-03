@@ -9,6 +9,7 @@ let lastId = 0;
 if (localStorage.getItem("todoData")) {
     todoData = JSON.parse(localStorage.getItem("todoData"));
     lastId = JSON.parse(localStorage.getItem("lastId"));
+    updateTodoScreen();
 }
 
 // add
