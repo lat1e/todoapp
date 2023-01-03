@@ -1,6 +1,6 @@
 const todoInput = document.getElementById("todo-input");
 const todoButton = document.getElementById("todo-button");
-const todoListTable = document.getElementById("todo-list");
+const todoListTbody = document.getElementById("todo-list-tbody");
 
 // {id:1, content:"할일", done:false}
 let todoData = [];
@@ -53,7 +53,7 @@ function saveTodoData() {
 }
 
 function updateTodoScreen() {
-    const tbody = document.createElement("tbody");
+    const trList = [];
 /*
     for (const item of todoData){
         item.id = 3 
@@ -95,9 +95,9 @@ function updateTodoScreen() {
         });
 
         tr.append(tdCheckbox, tdContent, tdDelbutton);
-        tbody.append(tr);
+        trList.push(tr)
     }
-    todoListTable.replaceChildren(tbody);
+    todoListTbody.replaceChildren(...trList);
 }
 
 todoButton.addEventListener("click", function() {
