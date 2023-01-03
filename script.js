@@ -103,4 +103,6 @@ function updateTodoScreen() {
 
 todoButton.addEventListener("click", function() {
     addTodoItem(todoInput.value);
+    todoInput.value = "";
+    todoInput.focus();
 })
