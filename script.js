@@ -1,3 +1,7 @@
+const todoInput = document.getElementById("todo-input");
+const todoButton = document.getElementById("todo-button");
+const todoListTable = document.getElementById("todo-list");
+
 // {id:1, content:"할일", done:false}
 let todoData = [];
 let lastId = 0;
@@ -39,7 +43,8 @@ function updateDoneTodoItem(id, done) {
 }
 
 function actionAfterUpdateTodo() {
-    saveTodoData()
+    saveTodoData();
+    updateTodoScreen();
 }
 
 function saveTodoData() {
@@ -47,11 +52,54 @@ function saveTodoData() {
     localStorage.setItem("lastId", JSON.stringify(lastId));
 }
 
-/* test
-addTodoItem("abc");
-addTodoItem("bcd");
-addTodoItem("cdf");
-console.log(JSON.stringify(todoData));
-deleteTodoItem(1);
-console.log(todoData);
-updateDoneTodoItem(0, true); */
+function updateTodoScreen() {
+    const tbody = document.createElement("tbody");
+/*
+    for (const item of todoData){
+        item.id = 3 
+    }
+
+    for (const i in todoData) {
+        const item = todoData[i];
+        item.id = 3
+    }
+
+    for (let i=0; i<todoData.length; i++){
+        const item = todoData[i];
+        item.id = 3
+    }
+*/
+    for (const item of todoData){
+        let tr = document.createElement("tr");
+        let tdCheckbox = document.createElement("td");
+        let tdContent = document.createElement("td");
+        let tdDelbutton = document.createElement("td");
+
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = item.done;
+        tdCheckbox.append(checkbox);
+        
+        tdContent.innerText = item.content;
+
+        let button = document.createElement("button");
+        button.innerText = "x";
+        tdDelbutton.append(button);
+
+        checkbox.addEventListener("change", function(){
+            updateDoneTodoItem(item.id, checkbox.checked);
+        });
+
+        button.addEventListener("click", function(){
+            deleteTodoItem(item.id);
+        });
+
+        tr.append(tdCheckbox, tdContent, tdDelbutton);
+        tbody.append(tr);
+    }
+    todoListTable.replaceChildren(tbody);
+}
+
+todoButton.addEventListener("click", function() {
+    addTodoItem(todoInput.value);
+})
