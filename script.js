@@ -1,14 +1,16 @@
 const todoInput = document.getElementById("todo-input");
 const todoButton = document.getElementById("todo-button");
-const todoListTable = document.getElementById("todo-list");
+const todoListTbody = document.getElementById("todo-list-tbody");
 
 // {id:1, content:"할일", done:false}
 let todoData = [];
 let lastId = 0;
 
 if (localStorage.getItem("todoData")) {
-    todoData = JSON.parse(localStorage.getItem("todoData"));
-    lastId = JSON.parse(localStorage.getItem("lastId"));
+    const data = JSON.parse(localStorage.getItem("todoData"));
+    todoData = data.todoData;
+    lastId = data.lastId;
+    updateTodoScreen();
 }
 
 // add
@@ -48,12 +50,13 @@ function actionAfterUpdateTodo() {
 }
 
 function saveTodoData() {
-    localStorage.setItem("todoData", JSON.stringify(todoData));
-    localStorage.setItem("lastId", JSON.stringify(lastId));
+    localStorage.setItem("todoData", JSON.stringify({
+        todoData, lastId
+    }));
 }
 
 function updateTodoScreen() {
-    const tbody = document.createElement("tbody");
+    const trList = [];
 /*
     for (const item of todoData){
         item.id = 3 
@@ -95,11 +98,13 @@ function updateTodoScreen() {
         });
 
         tr.append(tdCheckbox, tdContent, tdDelbutton);
-        tbody.append(tr);
+        trList.push(tr)
     }
-    todoListTable.replaceChildren(tbody);
+    todoListTbody.replaceChildren(...trList);
 }
 
 todoButton.addEventListener("click", function() {
     addTodoItem(todoInput.value);
+    todoInput.value = "";
+    todoInput.focus();
 })
