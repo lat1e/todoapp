@@ -77,6 +77,8 @@ function updateTodoScreen() {
         let tdCheckbox = document.createElement("td");
         let tdContent = document.createElement("td");
         let tdDelbutton = document.createElement("td");
+        tdCheckbox.className = "cell-min";
+        tdDelbutton.className = "cell-min";
 
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -84,9 +86,13 @@ function updateTodoScreen() {
         tdCheckbox.append(checkbox);
         
         tdContent.innerText = item.content;
+        if (item.done === true) {
+            tdContent.classList.add("todo-done-item")
+        }
 
         let button = document.createElement("button");
-        button.innerText = "x";
+        button.innerHTML = '<i class="bi bi-trash-fill"></i>';
+        button.className = "btn btn-danger";
         tdDelbutton.append(button);
 
         checkbox.addEventListener("change", function(){
