@@ -1,116 +1,107 @@
-const todoInput = document.getElementById("todo-input");
-const todoButton = document.getElementById("todo-button");
-const todoListTbody = document.getElementById("todo-list-tbody");
+const { useState, useEffect } = React;
 
-// {id:1, content:"할일", done:false}
-let todoData = [];
-let lastId = 0;
+function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState("");
+  const [nextId, setNextId] = useState(1);
+  const [todosLoaded, setTodosLoaded] = useState(false);
 
-if (localStorage.getItem("todoData")) {
-    const data = JSON.parse(localStorage.getItem("todoData"));
-    todoData = data.todoData;
-    lastId = data.lastId;
-    updateTodoScreen();
-}
+  const addTodo = (todoContent) => {
+    const todo = {
+      id: nextId,
+      content: todoContent,
+      completed: false,
+    };
+    setNextId((nextId) => nextId + 1);
+    setTodos([...todos, todo]);
+    setNewTodo("");
+  };
 
-// add
-function addTodoItem(content) {
-    todoData.push({
-        id: lastId,
-        content: content,
-        done: false
-    });
-    lastId++;
-    actionAfterUpdateTodo();
-}
+  const updateCompleted = (id, completed) => {
+    setTodos(
+      todos.map((todo) => (todo.id === id ? { ...todo, completed } : todo))
+    );
+  };
 
-// delete
-function deleteTodoItem(id) {
-    for (const i in todoData){
-        if (id === todoData[i].id) {
-            todoData.splice(i, 1);
-        }
+  const deleteTodoItem = (id) =>
+    setTodos(todos.filter((todo) => todo.id !== id));
+
+  // save todos and nextId to localStorage
+  useEffect(() => {
+    if (todosLoaded === true) {
+      localStorage.setItem("todos", JSON.stringify(todos));
+      localStorage.setItem("nextId", JSON.stringify(nextId));
     }
-    actionAfterUpdateTodo();
+    console.log("store data");
+  }, [todos, nextId]);
+
+  // load todos and nextId from localStorage
+  useEffect(() => {
+    const todos = JSON.parse(localStorage.getItem("todos"));
+    const nextId = JSON.parse(localStorage.getItem("nextId"));
+    if (todos) {
+      setTodos(todos);
+    }
+    if (nextId) {
+      setNextId(nextId);
+    }
+    setTodosLoaded(true);
+  }, []);
+
+  return (
+    <div className="container">
+      <h1>Todo List</h1>
+      <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="할일"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+        />
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={() => addTodo(newTodo)}
+        >
+          등록
+        </button>
+      </div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>완료</th>
+            <th>할일</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          {todos.map((todo) => (
+            <tr key={todo.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => updateCompleted(todo.id, !todo.completed)}
+                />
+              </td>
+              <td style={{ color: todo.completed ? "red" : "black" }}>
+                {todo.content}
+              </td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteTodoItem(todo.id)}
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
-// done
-function updateDoneTodoItem(id, done) {
-    for (const i in todoData){
-        if (id === todoData[i].id) {
-            todoData[i].done = done;
-        }
-    }
-    actionAfterUpdateTodo();
-}
-
-function actionAfterUpdateTodo() {
-    saveTodoData();
-    updateTodoScreen();
-}
-
-function saveTodoData() {
-    localStorage.setItem("todoData", JSON.stringify({
-        todoData, lastId
-    }));
-}
-
-function updateTodoScreen() {
-    const trList = [];
-/*
-    for (const item of todoData){
-        item.id = 3 
-    }
-
-    for (const i in todoData) {
-        const item = todoData[i];
-        item.id = 3
-    }
-
-    for (let i=0; i<todoData.length; i++){
-        const item = todoData[i];
-        item.id = 3
-    }
-*/
-    for (const item of todoData){
-        let tr = document.createElement("tr");
-        let tdCheckbox = document.createElement("td");
-        let tdContent = document.createElement("td");
-        let tdDelbutton = document.createElement("td");
-        tdCheckbox.className = "cell-min";
-        tdDelbutton.className = "cell-min";
-
-        let checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = item.done;
-        tdCheckbox.append(checkbox);
-        
-        tdContent.innerText = item.content;
-        if (item.done === true) {
-            tdContent.classList.add("todo-done-item")
-        }
-
-        let button = document.createElement("button");
-        button.innerHTML = '<i class="bi bi-trash-fill"></i>';
-        button.className = "btn btn-danger";
-        tdDelbutton.append(button);
-
-        checkbox.addEventListener("change", function(){
-            updateDoneTodoItem(item.id, checkbox.checked);
-        });
-
-        button.addEventListener("click", function(){
-            deleteTodoItem(item.id);
-        });
-
-        tr.append(tdCheckbox, tdContent, tdDelbutton);
-        trList.push(tr)
-    }
-    todoListTbody.replaceChildren(...trList);
-}
-
-todoButton.addEventListener("click", function() {
-    addTodoItem(todoInput.value);
-    todoInput.value = "";
-    todoInput.focus();
-})
+ReactDOM.createRoot(document.getElementById("todo-app")).render(<TodoApp />);
