@@ -1,0 +1,29 @@
+body {
+    background: linear-gradient(0deg, #ffe1e6 , #d7ecff);
+    height: 100vh;
+    font-family: 'Nanum Pen Script', cursive;
+}
+
+header {
+    height: 50px;
+    background-color: white;
+    text-align: center;
+    line-height: 50px;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+.title {
+    font-size: 50px;
+    text-shadow: 3px 3px white;
+}
+
+.cell-min {
+    width: 1%;
+}
+
+.todo-done-item {
+    color: white;
+}

@@ -6,11 +6,26 @@ const todoListTbody = document.getElementById("todo-list-tbody");
 let todoData = [];
 let lastId = 0;
 
-if (localStorage.getItem("todoData")) {
-    const data = JSON.parse(localStorage.getItem("todoData"));
-    todoData = data.todoData;
-    lastId = data.lastId;
-    updateTodoScreen();
+function loadFromServer() {
+fetch("http://127.0.0.1:3000/todos")
+.then((response) => response.json())
+.then((data) => {todoData = data; updateTodoScreen();});
+}
+
+function loadFromLocal() {
+    if (localStorage.getItem("todoData")) {
+        const data = JSON.parse(localStorage.getItem("todoData"));
+        todoData = data.todoData;
+        lastId = data.lastId;
+        updateTodoScreen();
+    }
+}
+
+// loadFromServer();
+loadFromLocal();
+function saveTodoData() {
+    //saveToServer();
+    saveToLocal();
 }
 
 // add
@@ -49,11 +64,22 @@ function actionAfterUpdateTodo() {
     updateTodoScreen();
 }
 
-function saveTodoData() {
+function saveToLocal() {
     localStorage.setItem("todoData", JSON.stringify({
         todoData, lastId
     }));
 }
+function saveToServer() {
+    const url = "http://127.0.0.1:3000/add";
+    fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE 등
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(todoData), // body의 데이터 유형은 반드시 "Content-Type" 헤더와 일치해야 함
+      });
+}
+
 
 function updateTodoScreen() {
     const trList = [];
@@ -82,17 +108,20 @@ function updateTodoScreen() {
 
         let checkbox = document.createElement("input");
         checkbox.type = "checkbox";
+        checkbox.id = "done" + item.id;
+        checkbox.className = "done-checkbox";
+
         checkbox.checked = item.done;
         tdCheckbox.append(checkbox);
         
         tdContent.innerText = item.content;
         if (item.done === true) {
-            tdContent.classList.add("todo-done-item")
+            tdContent.classList.add("todo-done-item");
         }
 
         let button = document.createElement("button");
-        button.innerHTML = '<i class="bi bi-trash-fill"></i>';
-        button.className = "btn btn-danger";
+        button.innerHTML = '<i class="bi bi-trash"></i>';
+        button.className = "btn btn-outline-danger";
         tdDelbutton.append(button);
 
         checkbox.addEventListener("change", function(){
@@ -104,7 +133,7 @@ function updateTodoScreen() {
         });
 
         tr.append(tdCheckbox, tdContent, tdDelbutton);
-        trList.push(tr)
+        trList.push(tr);
     }
     todoListTbody.replaceChildren(...trList);
 }
@@ -113,4 +142,12 @@ todoButton.addEventListener("click", function() {
     addTodoItem(todoInput.value);
     todoInput.value = "";
     todoInput.focus();
+})
+
+todoInput.addEventListener("keyup", function (event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        addTodoItem(todoInput.value);
+        todoInput.value = "";
+    }
 })
